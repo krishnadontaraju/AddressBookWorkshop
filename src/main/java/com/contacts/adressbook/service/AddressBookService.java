@@ -1,52 +1,60 @@
 package com.contacts.adressbook.service;
 
 import com.contacts.adressbook.dto.ContactDTO;
+import com.contacts.adressbook.exception.AddressBookException;
 import com.contacts.adressbook.model.ContactData;
-import org.springframework.stereotype.Component;
+import com.contacts.adressbook.repository.AddressBookRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
+@Slf4j
 public class AddressBookService implements IAddressBookService {
 
-    private List<ContactData> contactDataList = new ArrayList<>();
+    @Autowired
+    private AddressBookRepository addressBookRepository;
 
     @Override
     public List<ContactData> getAddressBookData() {
 
-        return contactDataList;
+        return addressBookRepository.findAll();
     }
 
     @Override
     public ContactData getContactDataById(int contactId) {
 
-        return contactDataList.get(contactId - 1);
+        return addressBookRepository.findById(contactId)
+                                    .orElseThrow(() -> new AddressBookException("Contact not Found"));
     }
 
     @Override
     public ContactData createContactData(ContactDTO contactDTO) {
         ContactData contactData = null;
-        contactData = new ContactData(contactDataList.size() + 1 , contactDTO);
-        contactDataList.add(contactData);
-        return contactData;
+        contactData = new ContactData(contactDTO);
+        log.debug("Contact Data : "+contactData);
+        return addressBookRepository.save(contactData);
     }
 
     @Override
     public ContactData updateContactData(int contactId , ContactDTO contactDTO) {
         ContactData contactData = this.getContactDataById(contactId);
-        contactData.setFirstName(contactDTO.firstName);
-        contactData.setLastName(contactDTO.lastName);
-        contactData.setContactNumber(contactDTO.contactNumber);
+        contactData.updateContactData(contactDTO);
 
-        contactDataList.set(contactId - 1, contactData);
+        return addressBookRepository.save(contactData);
+    }
 
-        return contactData;
+    @Override
+    public List<ContactData> getContactsByType(String type){
+        return addressBookRepository.findAllByContactType(type);
     }
 
     @Override
     public void deleteContactData(int contactid) {
-        contactDataList.remove(contactid -1);
+        ContactData contactData = this.getContactDataById(contactid);
+        addressBookRepository.delete(contactData);
     }
 
 }

@@ -42,6 +42,14 @@ public class AddressBookController {
         return new ResponseEntity<ResponseDTO>(responseDTO ,HttpStatus.OK);
     }
 
+    @GetMapping("/type/{type}")
+    public ResponseEntity<ResponseDTO> getContactDataByType(@PathVariable("type") String type){
+        List<ContactData> contactDataList = null;
+        contactDataList = addressBookService.getContactsByType(type);
+        ResponseDTO responseDTO = new ResponseDTO("Get by Type call Succesful" , contactDataList);
+        return new ResponseEntity<ResponseDTO>(responseDTO , HttpStatus.OK);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<ResponseDTO> addContact(@RequestBody ContactDTO contactDTO){
         ContactData contactData = null;

@@ -1,44 +1,47 @@
 package com.contacts.adressbook.model;
 
 import com.contacts.adressbook.dto.ContactDTO;
+import lombok.Data;
 
-public class ContactData {
+import javax.persistence.*;
+import java.util.List;
 
+
+@Entity
+@Table(name = "contacts")
+public @Data class ContactData {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "contact_id")
     private int contactId;
     private String firstName;
     private String lastName;
     private long contactNumber;
-    public ContactData(int contactId, ContactDTO contactDTO) {
-        super();
-        this.contactId = contactId;
+    private String city;
+    private String state;
+    private int zipCode;
+
+    @ElementCollection
+    @CollectionTable(name = "types" , joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "type")
+    private List<String> type;
+
+
+    public ContactData(ContactDTO contactDTO) {
+
+        this.updateContactData(contactDTO);
+
+    }
+
+    public void updateContactData(ContactDTO contactDTO){
         this.firstName = contactDTO.firstName;
         this.lastName = contactDTO.lastName;
         this.contactNumber = contactDTO.contactNumber;
-    }
-    public int getContactId() {
-        return contactId;
-    }
-    public void setContactId(int contactId) {
-        this.contactId = contactId;
-    }
-    public String getFirstName() {
-        return firstName;
-    }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    public String getLastName() {
-        return lastName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    public long getContactNumber() {
-        return contactNumber;
-    }
-    public void setContactNumber(long contactNumber) {
-        this.contactNumber = contactNumber;
+        this.city = contactDTO.city;
+        this.state = contactDTO.state;
+        this.zipCode = contactDTO.zipCode;
     }
 
-
+    public ContactData() {}
 }
