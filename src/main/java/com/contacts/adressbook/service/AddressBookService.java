@@ -18,8 +18,6 @@ public class AddressBookService implements IAddressBookService {
         return contactDataList;
     }
 
-
-
     @Override
     public ContactData getContactDataById(int contactId) {
 

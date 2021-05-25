@@ -51,17 +51,17 @@ public class AddressBookController {
     }
 
     @PutMapping("/update/{contactId}")
-    public ResponseEntity<String> updateContact(@PathVariable ("contactId") int contacId , @RequestBody ContactDTO contactDTO){
+    public ResponseEntity<ResponseDTO> updateContact(@PathVariable("contactId") int contactId , @RequestBody ContactDTO contactDTO){
         ContactData contactData = null;
-        contactData = addressBookService.updateContactData(contacId, contactDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Get Call For Id Successful" , contactData);
-        return new ResponseEntity<>("Update the contact's Pay Roll data : "+responseDTO , HttpStatus.OK);
+        contactData = addressBookService.updateContactData(contactId,contactDTO);
+        ResponseDTO responseDTO = new ResponseDTO("Update Call For Id Successful" , contactData);
+        return new ResponseEntity<ResponseDTO>(responseDTO , HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{contactId}")
-    public ResponseEntity<String> deleteContact(@PathVariable("contactId") int contactId){
+    public ResponseEntity<ResponseDTO> deleteContact(@PathVariable("contactId") int contactId){
         addressBookService.deleteContactData(contactId);
         ResponseDTO responseDTO = new ResponseDTO("Deleted successfully ","Deleted id"+contactId);
-        return new ResponseEntity<>("Deleted contact's Data for id : "+responseDTO , HttpStatus.OK);
+        return new ResponseEntity<ResponseDTO>(responseDTO , HttpStatus.OK);
     }
 }
