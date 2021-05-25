@@ -2,6 +2,8 @@ package com.contacts.adressbook.controller;
 
 import com.contacts.adressbook.dto.ResponseDTO;
 import com.contacts.adressbook.model.ContactData;
+import com.contacts.adressbook.service.IAddressBookService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,45 +17,51 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.contacts.adressbook.dto.ContactDTO;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/book")
 public class AddressBookController {
 
+    @Autowired
+    private IAddressBookService addressBookService;
+
     @RequestMapping(value = {"","/","/contacts"})
     public ResponseEntity<ResponseDTO> getAddressBookInformation(){
-        ContactData contactData = null;
-        contactData = new ContactData(1, new ContactDTO("Galefaugger","Basiela", 789456123));
-        ResponseDTO responseDTO = new ResponseDTO("Get Call For Id Successful" , contactData);
-        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+        List<ContactData> contactDataList = null;
+        contactDataList = addressBookService.getAddressBookData();
+        ResponseDTO responseDTO = new ResponseDTO("Get Call For Id Successful" , contactDataList);
+        return new ResponseEntity<ResponseDTO>(responseDTO ,HttpStatus.OK);
     }
 
     @GetMapping("/get/{contactId}")
     public ResponseEntity<ResponseDTO> getAddressBookInformation(@PathVariable("contactId") int contactId){
         ContactData contactData = null;
-        contactData = new ContactData(1, new ContactDTO("Galefaugger","Basiela", 789456123));
+        contactData = addressBookService.getContactDataById(contactId);
         ResponseDTO responseDTO = new ResponseDTO("Get Call For Id Successful" , contactData);
-        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+        return new ResponseEntity<ResponseDTO>(responseDTO ,HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDTO> addContact(@RequestBody ContactDTO contactDTO){
         ContactData contactData = null;
-        contactData = new ContactData(1, contactDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Creation call successful for + " , contactData);
-        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+        contactData = addressBookService.createContactData(contactDTO);
+        ResponseDTO responseDTO = new ResponseDTO("Get Call For Id Successful" , contactData);
+        return new ResponseEntity<ResponseDTO>(responseDTO , HttpStatus.OK);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<ResponseDTO> updateContact(@RequestBody ContactDTO contactDTO){
+    @PutMapping("/update/{contactId}")
+    public ResponseEntity<String> updateContact(@PathVariable ("contactId") int contacId , @RequestBody ContactDTO contactDTO){
         ContactData contactData = null;
-        contactData = new ContactData(1, contactDTO);
-        ResponseDTO responseDTO = new ResponseDTO(" Call For Id updation Successful" , contactData);
-        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+        contactData = addressBookService.updateContactData(contacId, contactDTO);
+        ResponseDTO responseDTO = new ResponseDTO("Get Call For Id Successful" , contactData);
+        return new ResponseEntity<>("Update the contact's Pay Roll data : "+responseDTO , HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{contactId}")
-    public ResponseEntity<ResponseDTO> deleteContact(@PathVariable("contactId") int contactId){
+    public ResponseEntity<String> deleteContact(@PathVariable("contactId") int contactId){
+        addressBookService.deleteContactData(contactId);
         ResponseDTO responseDTO = new ResponseDTO("Deleted successfully ","Deleted id"+contactId);
-        return new ResponseEntity<ResponseDTO>(responseDTO,HttpStatus.OK);
+        return new ResponseEntity<>("Deleted contact's Data for id : "+responseDTO , HttpStatus.OK);
     }
 }
